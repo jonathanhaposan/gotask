@@ -1,18 +1,26 @@
-package main
+package client
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"net"
+	"os"
 )
-
-var conn net.Conn
 
 func main() {
 
 	// connect to this socket
-	conn, err := net.Dial("tcp", "127.0.0.1:8081")
-	if err != nil {
-		log.Println("Error connecting to tcp")
+	conn, _ := net.Dial("tcp", "127.0.0.1:8081")
+	for {
+		// read in input from stdin
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Text to send: ")
+		text, _ := reader.ReadString('\n')
+		asd, err := conn.Write([]byte(text))
+		log.Println(asd, err)
+		// listen for reply
+		message, _ := bufio.NewReader(conn).ReadString('\n')
+		fmt.Print("Message from server: " + message)
 	}
-	log.Println(conn)
 }
