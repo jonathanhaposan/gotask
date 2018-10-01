@@ -43,5 +43,7 @@ tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:9999")
     listener, err := net.ListenTCP("tcp", tcpAddr)
     if err != nil {
         return
-    }
+	}
+
+	https://stackoverflow.com/questions/38646224/golang-tcp-client-does-not-receive-data-from-server-hangs-blocks-on-conn-read/38650064
 **/
