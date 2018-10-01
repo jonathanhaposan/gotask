@@ -1,13 +1,19 @@
 package webserver
 
 import (
+	"fmt"
 	"log"
 	"net"
+	"net/http"
 
 	"github.com/julienschmidt/httprouter"
 )
 
-var tcpClient net.Conn
+var (
+	assetDirectory    = "../../file/asset"
+	templateDirectory = "../../file/asset/html"
+	tcpClient         *net.TCPConn
+)
 
 func InitRouter() (router *httprouter.Router) {
 	router = httprouter.New()
@@ -18,13 +24,27 @@ func InitRouter() (router *httprouter.Router) {
 	router.GET("/profile", handlerGetProfile)
 	router.POST("/profile", handlerPostProfile)
 
+	router.ServeFiles("/assets/*filepath", http.Dir(assetDirectory))
+
 	return
 }
 
 func InitTCPClient() {
-	conn, err := net.Dial("tcp", ":8081")
+	target := "localhost:8081"
+
+	raddr, err := net.ResolveTCPAddr("tcp", target)
 	if err != nil {
-		log.Println("Error connecting to tcp")
+		fmt.Println(err)
+		return
 	}
+
+	conn, err := net.DialTCP("tcp", nil, raddr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	log.Println("Start TCP Client on :8081")
 	tcpClient = conn
+	tcpClient.SetKeepAlive(true)
 }

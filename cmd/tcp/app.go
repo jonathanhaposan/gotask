@@ -1,18 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 
 	"github.com/jonathanhaposan/gotask/tcp/server"
 )
 
-// only needed below for sample processing
-
 func main() {
 
-	fmt.Println("Launching server...")
+	server.InitRedisConn()
+
+	log.Println("Start TCP server on :8081")
 
 	// listen on all interfaces
 	ln, err := net.Listen("tcp", ":8081")
@@ -35,3 +34,14 @@ func main() {
 		go server.HandleRequest(conn)
 	}
 }
+
+/**
+tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:9999")
+    if err != nil {
+        return
+    }
+    listener, err := net.ListenTCP("tcp", tcpAddr)
+    if err != nil {
+        return
+    }
+**/
