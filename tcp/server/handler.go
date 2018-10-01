@@ -12,8 +12,6 @@ func HandleRequest(conn net.Conn) {
 
 	log.Printf("%+v\n", requestTCP)
 
-	requestTCP.RequestType = 123
-
 	response := TCPRequest{}
 
 	switch requestTCP.RequestType {
@@ -49,5 +47,6 @@ func getUserCookie(data TCPRequest) (resp TCPRequest) {
 func setUserCookie() (cookie string) {
 	sessionCookie, _ := uuid.NewV4()
 	cookie = sessionCookie.String()
+	log.Println(cookie)
 	return
 }
