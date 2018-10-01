@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/gob"
 	"fmt"
 	"log"
 	"net"
@@ -22,7 +21,7 @@ func main() {
 	}
 
 	defer func() {
-		log.Println("Closed")
+		log.Println("TCP Server Stop...")
 		ln.Close()
 	}()
 	// run loop forever (or until ctrl-c)
@@ -33,17 +32,6 @@ func main() {
 			log.Println(err)
 		}
 
-		requestTCP := server.TCPRequest{}
-		decoder := gob.NewDecoder(conn)
-		decoder.Decode(&requestTCP)
-
-		log.Printf("%+v\n", requestTCP)
-
-		requestTCP.RequestType = 123
-
-		encoder := gob.NewEncoder(conn)
-		encoder.Encode(requestTCP)
-
-		// go server.HandleRequest(conn)
+		go server.HandleRequest(conn)
 	}
 }

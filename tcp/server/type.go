@@ -9,4 +9,6 @@ type TCPRequest struct {
 type User struct {
 	Username string
 	Password string
+	Nickname string
+	Picture  string
 }

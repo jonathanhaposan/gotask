@@ -1,20 +1,53 @@
 package server
 
 import (
-	"bufio"
-	"encoding/json"
 	"log"
 	"net"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 func HandleRequest(conn net.Conn) {
-	var requestTCP TCPRequest
-
-	reader := bufio.NewReader(conn)
-	buf, _ := reader.ReadBytes('\n')
-
-	json.Unmarshal(buf, requestTCP)
+	requestTCP := ReadTCPData(conn)
 
 	log.Printf("%+v\n", requestTCP)
-	conn.Write([]byte("ok\n"))
+
+	requestTCP.RequestType = 123
+
+	response := TCPRequest{}
+
+	switch requestTCP.RequestType {
+	case 1:
+		response = handleLogin(requestTCP)
+	case 2:
+		response = handleUpload(requestTCP)
+	case 3:
+		response = getUserCookie(requestTCP)
+	}
+
+	SendTCPData(conn, response)
+}
+
+func handleLogin(data TCPRequest) (resp TCPRequest) {
+	resp = data
+	asd := setUserCookie()
+	resp.Cookie = asd
+	log.Println(asd)
+	return
+}
+
+func handleUpload(data TCPRequest) (resp TCPRequest) {
+
+	return
+}
+
+func getUserCookie(data TCPRequest) (resp TCPRequest) {
+
+	return
+}
+
+func setUserCookie() (cookie string) {
+	sessionCookie, _ := uuid.NewV4()
+	cookie = sessionCookie.String()
+	return
 }

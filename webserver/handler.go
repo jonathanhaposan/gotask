@@ -1,14 +1,12 @@
 package webserver
 
 import (
-	"encoding/gob"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/jonathanhaposan/gotask/tcp/server"
 	"github.com/julienschmidt/httprouter"
-	"github.com/satori/go.uuid"
 )
 
 func handlerGetLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -28,22 +26,18 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		return
 	}
 
-	user := server.User{r.FormValue("username"), r.FormValue("password")}
-	requestTCP := server.TCPRequest{User: user}
+	user := server.User{Username: r.FormValue("username"), Password: r.FormValue("password")}
+	requestTCP := server.TCPRequest{RequestType: 1, User: user}
 
-	encoder := gob.NewEncoder(tcpClient)
-	encoder.Encode(requestTCP)
+	server.SendTCPData(tcpClient, requestTCP)
 
-	decoder := gob.NewDecoder(tcpClient)
-	decoder.Decode(&requestTCP)
+	response := server.ReadTCPData(tcpClient)
 
-	log.Printf("%+v\n", requestTCP)
-
-	sessionToken, _ := uuid.NewV4()
+	log.Printf("a %+v\n", response)
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session_cookie",
-		Value:   sessionToken.String(),
+		Value:   response.Cookie,
 		Expires: time.Now().Add(120 * time.Second),
 	})
 	http.Redirect(w, r, "/profile", http.StatusSeeOther)
