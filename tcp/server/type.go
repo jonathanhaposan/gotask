@@ -19,5 +19,6 @@ type User struct {
 type UploadedPicture struct {
 	File     []byte
 	FileType string
+	FileExt  string
 	FileSize int64
 }

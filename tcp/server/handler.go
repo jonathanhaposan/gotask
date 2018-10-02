@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"net"
 
@@ -64,6 +65,16 @@ func handleLogin(data TCPRequest) (resp TCPRequest) {
 }
 
 func handleUpload(data TCPRequest) (resp TCPRequest) {
+	rawPicture := data.UploadedPicture
+
+	err := ioutil.WriteFile(imageDirectory+"/"+"asdasdasd2"+rawPicture.FileExt, rawPicture.File, 0666)
+	if err != nil {
+		log.Println("Error write file", err)
+		return
+	}
+
+	log.Printf("%+v\n", rawPicture.FileExt)
+
 	// var picture multipart.File
 	// if data.User.PictureMIME != nil {
 	// 	picture = data.User.PictureMIME

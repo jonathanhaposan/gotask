@@ -1,8 +1,11 @@
 package webserver
 
 import (
+	"bytes"
 	"html/template"
+	"io"
 	"log"
+	"mime"
 	"net"
 	"net/http"
 	"time"
@@ -89,7 +92,7 @@ func handlerGetProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 }
 
 func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	// var rawPicture server.UploadedPicture
+	var rawPicture server.UploadedPicture
 
 	nickname := r.FormValue("nickname")
 	if len(nickname) == 0 {
@@ -97,7 +100,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	file, _, err := r.FormFile("picture") // img is the key of the form-data
+	file, head, err := r.FormFile("picture") // img is the key of the form-data
 	if err != nil {
 		if err.Error() != http.ErrMissingFile.Error() {
 
@@ -108,10 +111,30 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	if file != nil {
+		buffer := bytes.NewBuffer(nil)
+		_, err := io.Copy(buffer, file)
+		if err != nil {
+			log.Println("Error parse to buffer")
+			return
+		}
 
+		switch http.DetectContentType(buffer.Bytes()) {
+		case "image/jpeg", "image/jpg", "image/png":
+			rawPicture.FileType = http.DetectContentType(buffer.Bytes())
+			rawPicture.File = buffer.Bytes()
+			rawPicture.FileSize = head.Size
+			raw, _ := mime.ExtensionsByType(rawPicture.FileType)
+			rawPicture.FileExt = raw[0]
+		default:
+			log.Println("unknown file type uploaded")
+			return
+		}
 	}
 
-	requestTCP := server.TCPRequest{}
+	requestTCP := server.TCPRequest{
+		RequestType:     server.RequestEdit,
+		UploadedPicture: rawPicture,
+	}
 
 	conn := OpenConn()
 
