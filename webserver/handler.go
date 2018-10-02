@@ -45,7 +45,8 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	}
 	requestTCP, err := validateLogin(r.FormValue("username"), r.FormValue("password"), server.RequestLogin)
 	if err != nil {
-		log.Println("Error validate data")
+		log.Println("Error validate data:", err)
+		errorJSONResponse(w, err.Error())
 		return
 	}
 
@@ -53,13 +54,15 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
-		log.Println("Error Send data to server")
+		log.Println("Error Send data to server:", err)
+		errorJSONResponse(w, err.Error())
 		return
 	}
 
 	response, err := server.ReadTCPData(conn)
 	if err != nil {
-		log.Println("Error Read data from server")
+		log.Println("Error Read data from server:", err)
+		errorJSONResponse(w, err.Error())
 		return
 	}
 
@@ -92,7 +95,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 
 	cookie, err := r.Cookie("session_cookie")
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized - Session Expired", http.StatusUnauthorized)
 		return
 	}
 
@@ -101,22 +104,20 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	conn.Close()
 
 	if !hasSession {
-		log.Println("Error cookie invalid", err)
+		http.Error(w, "Unauthorized - Session Expired", http.StatusUnauthorized)
 		return
 	}
 
 	nickname := r.FormValue("nickname")
 	if len(nickname) == 0 {
-		log.Println("Nickname cannot empty")
+		errorJSONResponse(w, "Nickname cannot empty")
 		return
 	}
 
 	file, head, err := r.FormFile("picture") // img is the key of the form-data
 	if err != nil {
 		if err.Error() != http.ErrMissingFile.Error() {
-
-			log.Println(err.Error())
-			log.Println(http.ErrMissingFile.Error())
+			errorJSONResponse(w, err.Error())
 			return
 		}
 	}
@@ -125,7 +126,8 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		buffer := bytes.NewBuffer(nil)
 		_, err := io.Copy(buffer, file)
 		if err != nil {
-			log.Println("Error parse to buffer")
+			log.Println("Error parse to buffer:", err)
+			errorJSONResponse(w, err.Error())
 			return
 		}
 		defer file.Close()
@@ -138,7 +140,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			raw, _ := mime.ExtensionsByType(rawPicture.FileType)
 			rawPicture.FileExt = raw[0]
 		default:
-			log.Println("unknown file type uploaded")
+			errorJSONResponse(w, "unknown file type uploaded")
 			return
 		}
 	}
@@ -152,19 +154,19 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	conn = OpenConn()
-
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
-		log.Println("Error Send data to server")
+		log.Println("Error Send data to server:", err)
+		errorJSONResponse(w, err.Error())
 		return
 	}
 
 	_, err = server.ReadTCPData(conn)
 	if err != nil {
-		log.Println("Error Read data from server")
+		log.Println("Error Read data from server:", err)
+		errorJSONResponse(w, err.Error())
 		return
 	}
-
 	conn.Close()
 }
 

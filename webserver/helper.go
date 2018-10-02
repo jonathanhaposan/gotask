@@ -1,7 +1,9 @@
 package webserver
 
 import (
+	"encoding/json"
 	"errors"
+	"net/http"
 
 	"github.com/jonathanhaposan/gotask/tcp/server"
 )
@@ -26,4 +28,16 @@ func validateLogin(username, password string, reqType int) (data server.TCPReque
 	}
 
 	return
+}
+
+func errorJSONResponse(w http.ResponseWriter, err string) {
+	resp := ResponseJSON{
+		Status: http.StatusInternalServerError,
+		Error:  err,
+	}
+
+	j, _ := json.Marshal(resp)
+	w.WriteHeader(resp.Status)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
 }
