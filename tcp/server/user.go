@@ -9,7 +9,7 @@ func getUserDetail() {
 }
 
 func getUserLoginFromDB(user User) (result User) {
-	query := `SELECT id, username, password, nickname, picture FROM user WHERE username=?`
+	query := `SELECT id, username, nickname, password, picture FROM user WHERE username=?`
 	rows, err := db.Query(query, user.Username)
 	if err != nil {
 		log.Println("Error Query:", err)
@@ -28,10 +28,22 @@ func getUserLoginFromDB(user User) (result User) {
 	return
 }
 
-func updateUserDetail(user User) (err error) {
+func updateUserDetail(user User, url string) (err error) {
 	query := `UPDATE user SET nickname = ?, picture = ? WHERE id = ?`
 
-	_, err = db.Exec(query, user.Nickname, user.Picture)
+	_, err = db.Exec(query, user.Nickname, url, user.ID)
+	if err != nil {
+		log.Println("Error Query:", err)
+		return
+	}
+
+	return
+}
+
+func updateUserNickname(user User) (err error) {
+	query := `UPDATE user SET nickname = ? WHERE id = ?`
+
+	_, err = db.Exec(query, user.Nickname, user.ID)
 	if err != nil {
 		log.Println("Error Query:", err)
 		return

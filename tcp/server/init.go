@@ -20,6 +20,7 @@ const (
 	RequestEdit        = 2
 	RequestCheckCookie = 3
 	imageDirectory     = "../../file/image"
+	imageURL           = "/image/"
 )
 
 func InitRedisConn() {

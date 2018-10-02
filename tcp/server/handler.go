@@ -20,8 +20,6 @@ func HandleRequest(conn net.Conn) {
 	}
 	defer conn.Close()
 
-	log.Printf("%+v\n", requestTCP)
-
 	switch requestTCP.RequestType {
 	case RequestLogin:
 		response = handleLogin(requestTCP)
@@ -40,7 +38,6 @@ func HandleRequest(conn net.Conn) {
 
 func handleLogin(data TCPRequest) (resp TCPRequest) {
 	result := getUserLoginFromDB(data.User)
-	log.Printf("%+v\n", result)
 
 	if len(result.Username) == 0 {
 		log.Println("Username not found")
@@ -52,42 +49,40 @@ func handleLogin(data TCPRequest) (resp TCPRequest) {
 		return
 	}
 
-	resp.User = result
-
-	resp = data
 	cookie, err := setUserCookie(result)
 	if err != nil {
 		log.Println("err login", err)
 		return
 	}
+
+	resp = data
+	resp.User = result
 	resp.Cookie = cookie
 	return
 }
 
 func handleUpload(data TCPRequest) (resp TCPRequest) {
-	rawPicture := data.UploadedPicture
+	if len(data.UploadedPicture.File) > 0 {
+		path := imageDirectory + "/" + data.User.Username + data.UploadedPicture.FileExt
+		url := imageURL + data.User.Username + data.UploadedPicture.FileExt
+		err := updateUserDetail(data.User, url)
+		if err != nil {
+			log.Println("Error update data", err)
+			return
+		}
 
-	err := ioutil.WriteFile(imageDirectory+"/"+"asdasdasd2"+rawPicture.FileExt, rawPicture.File, 0666)
-	if err != nil {
-		log.Println("Error write file", err)
-		return
+		err = ioutil.WriteFile(path, data.UploadedPicture.File, 0666)
+		if err != nil {
+			log.Println("Error write file", err)
+			return
+		}
+	} else {
+		err := updateUserNickname(data.User)
+		if err != nil {
+			log.Println("Error update nickname", err)
+			return
+		}
 	}
-
-	log.Printf("%+v\n", rawPicture.FileExt)
-
-	// var picture multipart.File
-	// if data.User.PictureMIME != nil {
-	// 	picture = data.User.PictureMIME
-	// 	defer picture.Close()
-
-	// 	buff := make([]byte, 512) // docs tell that it take only first 512 bytes into consideration
-	// 	if _, err := picture.Read(buff); err != nil {
-	// 		fmt.Println(err) // do something with that error
-	// 		return
-	// 	}
-	// 	fmt.Println(http.DetectContentType(buff)) // do something based on your detection.
-
-	// }
 
 	return
 }
@@ -111,9 +106,6 @@ func getUserCookie(data TCPRequest) (resp TCPRequest) {
 	json.Unmarshal(result, &user)
 
 	resp.User = user
-
-	log.Printf("get %+v\n", user)
-	log.Printf("get2 %+v\n", result)
 	return
 }
 

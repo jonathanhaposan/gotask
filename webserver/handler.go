@@ -39,7 +39,7 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		conn.Close()
 
 		if hasSession {
-			http.Redirect(w, r, "/profile", http.StatusSeeOther)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 	}
@@ -65,8 +65,6 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 
 	conn.Close()
 
-	log.Printf("a %+v\n", response)
-
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session_cookie",
 		Value:   response.Cookie,
@@ -85,14 +83,27 @@ func handlerGetProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 	user, _ := checkUserSession(conn, cookie)
 	conn.Close()
 
-	log.Println(user)
-
 	tmpl := template.Must(template.ParseFiles(templateDirectory + "/profile.html"))
-	tmpl.Execute(w, nil)
+	tmpl.Execute(w, user)
 }
 
 func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var rawPicture server.UploadedPicture
+
+	cookie, err := r.Cookie("session_cookie")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	conn := OpenConn()
+	userSession, hasSession := checkUserSession(conn, cookie)
+	conn.Close()
+
+	if !hasSession {
+		log.Println("Error cookie invalid", err)
+		return
+	}
 
 	nickname := r.FormValue("nickname")
 	if len(nickname) == 0 {
@@ -117,6 +128,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			log.Println("Error parse to buffer")
 			return
 		}
+		defer file.Close()
 
 		switch http.DetectContentType(buffer.Bytes()) {
 		case "image/jpeg", "image/jpg", "image/png":
@@ -131,12 +143,15 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		}
 	}
 
+	userSession.Nickname = nickname
+
 	requestTCP := server.TCPRequest{
 		RequestType:     server.RequestEdit,
 		UploadedPicture: rawPicture,
+		User:            userSession,
 	}
 
-	conn := OpenConn()
+	conn = OpenConn()
 
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
@@ -144,30 +159,13 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	response, err := server.ReadTCPData(conn)
+	_, err = server.ReadTCPData(conn)
 	if err != nil {
 		log.Println("Error Read data from server")
 		return
 	}
 
 	conn.Close()
-
-	log.Printf("%+v\n", response)
-
-	// defer file.Close()
-
-	// fmt.Println("File is good")
-	// fmt.Println(handler.Filename)
-	// fmt.Println()
-	// fmt.Println(handler.Header)
-
-	// f, err := os.OpenFile(imageDirectory+"/"+handler.Filename, os.O_WRONLY|os.O_CREATE, 0666)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// defer f.Close()
-	// io.Copy(f, file)
 }
 
 func checkUserSession(conn net.Conn, cookie *http.Cookie) (userData server.User, isActive bool) {
@@ -187,6 +185,7 @@ func checkUserSession(conn net.Conn, cookie *http.Cookie) (userData server.User,
 		return
 	}
 
+	userData = response.User
 	isActive = response.HasActiveSession
 	return
 }

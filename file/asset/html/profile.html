@@ -14,23 +14,23 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6 offset-md-3">
-        <img src="/image/ipsum.png" class="rounded mx-auto d-block" alt="...">
+        {{ if eq (len .Picture) 0}}
+        <img src="/image/placeholder.jpg" class="rounded mx-auto d-block" alt="..." width="300px" height="300px">
+        {{ else }}
+        <img src="{{ .Picture }}" class="rounded mx-auto d-block" alt="..." width="300px" height="300px">
+        {{ end }}
         <form action="/profile" method="POST" id="loginform" enctype="multipart/form-data">
           <div class="form-group">
-            <label for="username">UUsername</label>
-            <input type="text" class="form-control" name="username" placeholder="Enter Username">
-          </div>
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" class="form-control" name="password" placeholder="Enter Password">
-          </div>
-          <div class="form-group">
-            <label for="picture">Example file input</label>
-            <input type="file" class="form-control-file" id="picture">
+            <label for="username">Username</label>
+            <input type="text" class="form-control" name="username" placeholder="Enter Username" value="{{ .Username }}" disabled>
           </div>
           <div class="form-group">
             <label for="nickname">Nickname</label>
-            <input type="text" class="form-control" name="nickname" placeholder="Enter Nickname">
+            <input type="text" class="form-control" name="nickname" placeholder="Enter Nickname" value="{{ .Nickname }}">
+          </div>
+          <div class="form-group">
+            <label for="picture">Upload image</label>
+            <input type="file" class="form-control-file" id="picture">
           </div>
           <button type="submit" class="btn btn-primary">Login</button>
         </form>
@@ -57,10 +57,12 @@
       url: frm.attr('action'),
       processData: false, // do not process the data as url encoded params
       contentType: false, // by default jQuery sets this to urlencoded string
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('X-Requested-With', 'xmlhttprequest');
+      },
       data: fd,
       success: function (data) {
-        console.log('Submission was successful.');
-        console.log(data);
+        location.reload();
       },
       error: function (data) {
         console.log('An error occurred.');
