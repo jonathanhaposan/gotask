@@ -64,6 +64,19 @@ func handleLogin(data TCPRequest) (resp TCPRequest) {
 }
 
 func handleUpload(data TCPRequest) (resp TCPRequest) {
+	// var picture multipart.File
+	// if data.User.PictureMIME != nil {
+	// 	picture = data.User.PictureMIME
+	// 	defer picture.Close()
+
+	// 	buff := make([]byte, 512) // docs tell that it take only first 512 bytes into consideration
+	// 	if _, err := picture.Read(buff); err != nil {
+	// 		fmt.Println(err) // do something with that error
+	// 		return
+	// 	}
+	// 	fmt.Println(http.DetectContentType(buff)) // do something based on your detection.
+
+	// }
 
 	return
 }

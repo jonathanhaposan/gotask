@@ -19,6 +19,7 @@ const (
 	RequestLogin       = 1
 	RequestEdit        = 2
 	RequestCheckCookie = 3
+	imageDirectory     = "../../file/image"
 )
 
 func InitRedisConn() {

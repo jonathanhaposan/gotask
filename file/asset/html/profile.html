@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css">
+  <title>Login Form</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <img src="/image/ipsum.png" class="rounded mx-auto d-block" alt="...">
+        <form action="/profile" method="POST" id="loginform" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="username">UUsername</label>
+            <input type="text" class="form-control" name="username" placeholder="Enter Username">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Enter Password">
+          </div>
+          <div class="form-group">
+            <label for="picture">Example file input</label>
+            <input type="file" class="form-control-file" id="picture">
+          </div>
+          <div class="form-group">
+            <label for="nickname">Nickname</label>
+            <input type="text" class="form-control" name="nickname" placeholder="Enter Nickname">
+          </div>
+          <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+<script src="/assets/js/jquery-3.3.1.min.js"></script>
+<script src="/assets/js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript">
+  var frm = $('#loginform');
+
+  frm.submit(function (e) {
+
+    e.preventDefault();
+    var fd = new FormData(this);
+    var files = $('#picture')[0].files[0];
+    fd.append('picture', files);
+
+    $.ajax({
+      type: frm.attr('method'),
+      url: frm.attr('action'),
+      processData: false, // do not process the data as url encoded params
+      contentType: false, // by default jQuery sets this to urlencoded string
+      data: fd,
+      success: function (data) {
+        console.log('Submission was successful.');
+        console.log(data);
+      },
+      error: function (data) {
+        console.log('An error occurred.');
+        console.log(data);
+      },
+    });
+  });
+</script>
+
+</html>

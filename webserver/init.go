@@ -12,6 +12,7 @@ import (
 var (
 	assetDirectory    = "../../file/asset"
 	templateDirectory = "../../file/asset/html"
+	imageDirectory    = "../../file/image"
 	tcpClient         *net.TCPConn
 )
 
@@ -25,7 +26,7 @@ func InitRouter() (router *httprouter.Router) {
 	router.POST("/profile", handlerPostProfile)
 
 	router.ServeFiles("/assets/*filepath", http.Dir(assetDirectory))
-
+	router.ServeFiles("/image/*filepath", http.Dir(imageDirectory))
 	return
 }
 

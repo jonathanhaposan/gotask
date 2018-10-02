@@ -5,6 +5,7 @@ type TCPRequest struct {
 	Cookie           string
 	HasActiveSession bool
 	User             User
+	UploadedPicture  UploadedPicture
 }
 
 type User struct {
@@ -13,4 +14,10 @@ type User struct {
 	Password string
 	Nickname string
 	Picture  string
+}
+
+type UploadedPicture struct {
+	File     []byte
+	FileType string
+	FileSize int64
 }
