@@ -48,3 +48,20 @@ func InitTCPClient() {
 	tcpClient = conn
 	tcpClient.SetKeepAlive(true)
 }
+
+func OpenConn() (conn *net.TCPConn) {
+	target := "localhost:8081"
+
+	raddr, err := net.ResolveTCPAddr("tcp", target)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	conn, err = net.DialTCP("tcp", nil, raddr)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	return
+}

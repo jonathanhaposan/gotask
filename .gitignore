@@ -1,3 +1,4 @@
 *.exe
-web
-tcp
+
+cmd/tcp/tcp
+cmd/web/web

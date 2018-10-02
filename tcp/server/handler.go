@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 
@@ -16,6 +17,7 @@ func HandleRequest(conn net.Conn) {
 		log.Println("Error read TCP data")
 		return
 	}
+	defer conn.Close()
 
 	log.Printf("%+v\n", requestTCP)
 
@@ -36,8 +38,23 @@ func HandleRequest(conn net.Conn) {
 }
 
 func handleLogin(data TCPRequest) (resp TCPRequest) {
+	result := getUserLoginFromDB(data.User)
+	log.Printf("%+v\n", result)
+
+	if len(result.Username) == 0 {
+		log.Println("Username not found")
+		return
+	}
+
+	if result.Password != data.User.Password {
+		log.Println("Wrong password")
+		return
+	}
+
+	resp.User = result
+
 	resp = data
-	cookie, err := setUserCookie(data.User.Username)
+	cookie, err := setUserCookie(result)
 	if err != nil {
 		log.Println("err login", err)
 		return
@@ -66,17 +83,25 @@ func getUserCookie(data TCPRequest) (resp TCPRequest) {
 		log.Printf("This %s cookie is found", data.Cookie)
 	}
 
-	log.Println("get", result)
+	user := User{}
+	json.Unmarshal(result, &user)
+
+	resp.User = user
+
+	log.Printf("get %+v\n", user)
+	log.Printf("get2 %+v\n", result)
 	return
 }
 
-func setUserCookie(username string) (cookie string, err error) {
+func setUserCookie(user User) (cookie string, err error) {
 	sessionCookie, _ := uuid.NewV4()
+
+	b, _ := json.Marshal(user)
 
 	conn := redisPool.Get()
 	defer conn.Close()
 
-	_, err = conn.Do("SETEX", sessionCookie.String(), 120, username)
+	_, err = conn.Do("SETEX", sessionCookie.String(), 120, string(b))
 	if err != nil {
 		log.Println("Error set cookie from redis:", err)
 		return

@@ -8,6 +8,7 @@ type TCPRequest struct {
 }
 
 type User struct {
+	ID       int64
 	Username string
 	Password string
 	Nickname string

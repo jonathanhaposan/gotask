@@ -10,6 +10,7 @@ import (
 func main() {
 
 	server.InitRedisConn()
+	server.InitDBConn()
 
 	log.Println("Start TCP server on :8081")
 
