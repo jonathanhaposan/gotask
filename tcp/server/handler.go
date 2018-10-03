@@ -42,13 +42,13 @@ func handleLogin(data TCPRequest) (resp TCPRequest) {
 
 	if len(result.Username) == 0 {
 		log.Println("Username not found")
-		resp.Error = err.Error()
+		resp.Error = "Username not found"
 		return
 	}
 
 	if result.Password != data.User.Password {
 		log.Println("Wrong password")
-		resp.Error = err.Error()
+		resp.Error = "Wrong password"
 		return
 	}
 

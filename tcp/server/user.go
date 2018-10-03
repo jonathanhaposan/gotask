@@ -13,6 +13,7 @@ func getUserDetail() {
 }
 
 func getUserLoginFromDB(user User) (result User, err error) {
+	result = User{}
 	query := `SELECT id, username, nickname, password, picture FROM user WHERE username=?`
 	rows, err := db.Query(query, user.Username)
 	if err != nil {

@@ -6,7 +6,14 @@ import (
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
-func TestHandleLoginPositive(t *testing.T) {
+func TestHandleLogin(t *testing.T) {
+	testHandleLoginNegativeErrorRedis(t)
+	testHandleLoginNegativeWrongPass(t)
+	testHandleLoginNegativeUsernameNotFound(t)
+	testHandleLoginPositive(t)
+}
+
+func testHandleLoginPositive(t *testing.T) {
 	mockRedis()
 
 	d, mock, err := sqlmock.New()
@@ -31,7 +38,7 @@ func TestHandleLoginPositive(t *testing.T) {
 	}
 }
 
-func TestHandleLoginNegativeUsernameNotFound(t *testing.T) {
+func testHandleLoginNegativeUsernameNotFound(t *testing.T) {
 	mockRedis()
 
 	d, mock, err := sqlmock.New()
@@ -44,19 +51,18 @@ func TestHandleLoginNegativeUsernameNotFound(t *testing.T) {
 	user := User{Username: "asd", Password: "asd"}
 	request := TCPRequest{User: user}
 
-	rows := sqlmock.NewRows([]string{"id", "username", "nickname", "password", "picture"}).
-		AddRow(1, "asdxxx", "asd", "asd", "/asd/asd.png")
+	rows := sqlmock.NewRows([]string{"id", "username", "nickname", "password", "picture"})
 
-	mock.ExpectQuery("SELECT (.+) FROM (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("SELECT (.+) FROM (.+)").WithArgs(user.Username).WillReturnRows(rows)
 
 	resp := handleLogin(request)
 
-	if len(resp.Error) > 0 {
-		t.Errorf("Error Not Expected")
+	if len(resp.Error) == 0 {
+		t.Errorf("Error were Expected")
 	}
 }
 
-func TestHandleLoginNegativeWrongPass(t *testing.T) {
+func testHandleLoginNegativeWrongPass(t *testing.T) {
 	mockRedis()
 
 	d, mock, err := sqlmock.New()
@@ -76,12 +82,13 @@ func TestHandleLoginNegativeWrongPass(t *testing.T) {
 
 	resp := handleLogin(request)
 
-	if len(resp.Error) > 0 {
-		t.Errorf("Error Not Expected")
+	if len(resp.Error) == 0 {
+		t.Errorf("Error were Expected")
 	}
 }
 
-func TestHandleLoginNegativeErrorRedis(t *testing.T) {
+func testHandleLoginNegativeErrorRedis(t *testing.T) {
+	mockRedis()
 	d, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("Unexpected error %+v\n", err)

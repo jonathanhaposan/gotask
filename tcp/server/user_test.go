@@ -76,7 +76,7 @@ func testGetUserLoginFromDBPositive(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "username", "nickname", "password", "picture"}).
 		AddRow(1, "asd", "asd", "asd", "/asd/asd.png")
 
-	mock.ExpectQuery("SELECT (.+) FROM (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("SELECT (.+) FROM (.+)").WithArgs(user.Username).WillReturnRows(rows)
 
 	_, err = getUserLoginFromDB(user)
 	if err != nil {
@@ -100,7 +100,7 @@ func testGetUserLoginFromDBNegative(t *testing.T) {
 	rows := sqlmock.NewRows([]string{"id", "username", "nickname", "password", "picture"}).
 		AddRow("trouble maker", 123, "asd", "asd", "/asd/asd.png")
 
-	mock.ExpectQuery("SELECT (.+) FROM (.+)").WillReturnRows(rows)
+	mock.ExpectQuery("SELECT (.+) FROM (.+)").WithArgs(user.Username).WillReturnRows(rows)
 
 	_, err = getUserLoginFromDB(user)
 	if err == nil {
