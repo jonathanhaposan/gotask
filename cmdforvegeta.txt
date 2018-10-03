@@ -1,0 +1,17 @@
+echo "GET http://localhost/" | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -duration=5s | tee results.bin | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta report | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta report -type=json results.bin > metrics.json | cat results.bin | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta plot > plot.html | cat results.bin | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta report -type="hist[0,100ms,200ms,300ms]"
+
+
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta
+
+echo "GET http://localhost:9000/login" | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -rate=1000/s -duration=3s | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta encode > /mnt/c/Users/jonathan.situmorang/go/bin/results_login_nocache.json
+echo "GET http://localhost:9000/profile" | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -name=test -rate=1000/s -duration=3s | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta encode > /mnt/c/Users/jonathan.situmorang/go/bin/results_profile_nocache.json
+
+
+
+echo "GET http://localhost:9000/login" | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -rate=100/s -duration=3s > /mnt/c/Users/jonathan.situmorang/go/bin/results.gob
+
+echo "GET http://localhost:9000/login" | .\vegeta.exe attack -rate=100/s -duration=3s > results.gob
+
+vegeta report -inputs=results_profile_nocache.bin -reporter=plot > plot.html
+
+.\vegeta.exe report 

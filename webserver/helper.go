@@ -30,7 +30,7 @@ func validateLogin(username, password string, reqType int) (data server.TCPReque
 	return
 }
 
-func errorJSONResponse(w http.ResponseWriter, err string) {
+func errorJSONResponse(w http.ResponseWriter, err string) (e error) {
 	resp := ResponseJSON{
 		Status: http.StatusInternalServerError,
 		Error:  err,
@@ -40,4 +40,5 @@ func errorJSONResponse(w http.ResponseWriter, err string) {
 	w.WriteHeader(resp.Status)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(j)
+	return
 }

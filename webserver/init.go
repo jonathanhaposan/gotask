@@ -14,6 +14,7 @@ var (
 	templateDirectory = "../../file/asset/html"
 	imageDirectory    = "../../file/image"
 	tcpClient         *net.TCPConn
+	targetTCP         = "localhost:8081"
 )
 
 func InitRouter() (router *httprouter.Router) {
@@ -31,9 +32,7 @@ func InitRouter() (router *httprouter.Router) {
 }
 
 func InitTCPClient() {
-	target := "localhost:8081"
-
-	raddr, err := net.ResolveTCPAddr("tcp", target)
+	raddr, err := net.ResolveTCPAddr("tcp", targetTCP)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -51,9 +50,7 @@ func InitTCPClient() {
 }
 
 func OpenConn() (conn *net.TCPConn) {
-	target := "localhost:8081"
-
-	raddr, err := net.ResolveTCPAddr("tcp", target)
+	raddr, err := net.ResolveTCPAddr("tcp", targetTCP)
 	if err != nil {
 		fmt.Println(err)
 		return
