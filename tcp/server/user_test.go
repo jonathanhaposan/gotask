@@ -1,9 +1,15 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"testing"
+	"time"
 
+	"github.com/alicebob/miniredis"
+
+	"github.com/gomodule/redigo/redis"
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
 
@@ -18,6 +24,43 @@ func TestUpdateUserDetail(t *testing.T) {
 func TestUpdateUserNickname(t *testing.T) {
 	testUpdateUserNicknamePositive(t)
 	testUpdateUserNicknameNegative(t)
+}
+
+func TestGetUserCookie(t *testing.T) {
+	testGetUserCookiePositive(t)
+	testGetUserCookieNegative(t)
+}
+
+func mockRedis() *miniredis.Miniredis {
+	s, err := miniredis.Run()
+	if err != nil {
+		panic(err)
+	}
+
+	redisPool = &redis.Pool{
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.Dial("tcp", s.Addr())
+			if err != nil {
+				log.Println("Redis Error", err)
+				return nil, err
+			}
+			return c, err
+		},
+
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			if err != nil {
+				log.Println("Error Ping Redis", err)
+				return err
+			}
+			return err
+		},
+	}
+
+	return s
 }
 
 func testGetUserLoginFromDBPositive(t *testing.T) {
@@ -151,4 +194,60 @@ func testUpdateUserNicknameNegative(t *testing.T) {
 	if err = mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectation: %+v\n", err)
 	}
+}
+
+func testGetUserCookiePositive(t *testing.T) {
+	server := mockRedis()
+	defer server.Close()
+
+	c, err := redis.Dial("tcp", server.Addr())
+	if err != nil {
+		t.Errorf("Error dial Dummy")
+	}
+
+	_, err = c.Do("SETEX", "123", 10, "value")
+	if err != nil {
+		t.Errorf("Error Set Dummy")
+	}
+
+	request := TCPRequest{
+		Cookie: "123",
+	}
+
+	_, err = getUserCookie(request)
+	if err != nil {
+		t.Errorf("Error were not Expected")
+	}
+
+	server.CheckGet(t, "123", "value")
+}
+
+func testGetUserCookieNegative(t *testing.T) {
+	server := mockRedis()
+	defer server.Close()
+
+	request := TCPRequest{
+		Cookie: "123",
+	}
+
+	_, err := getUserCookie(request)
+	if err == nil {
+		t.Errorf("Error were Expected")
+	}
+}
+
+func TestSetUserCookie(t *testing.T) {
+	server := mockRedis()
+	defer server.Close()
+
+	user := User{}
+
+	expected, _ := json.Marshal(user)
+
+	cookie, err := setUserCookie(user)
+	if err != nil {
+		t.Errorf("Error were not Expected")
+	}
+
+	server.CheckGet(t, cookie, string(expected))
 }
