@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"log"
 	"time"
 
 	"github.com/gomodule/redigo/redis"
@@ -25,6 +26,7 @@ func newPool(server string) *redis.Pool {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", server)
 			if err != nil {
+				log.Println("Redis Error", err)
 				return nil, err
 			}
 			return c, err
@@ -32,6 +34,10 @@ func newPool(server string) *redis.Pool {
 
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
 			_, err := c.Do("PING")
+			if err != nil {
+				log.Println("Error Ping Redis", err)
+				return err
+			}
 			return err
 		},
 	}

@@ -65,8 +65,13 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		errorJSONResponse(w, err.Error())
 		return
 	}
-
 	conn.Close()
+
+	if len(response.Error) != 0 {
+		log.Println("Error from server:", response.Error)
+		errorJSONResponse(w, response.Error)
+		return
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:    "session_cookie",
@@ -161,13 +166,19 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	_, err = server.ReadTCPData(conn)
+	response, err := server.ReadTCPData(conn)
 	if err != nil {
 		log.Println("Error Read data from server:", err)
 		errorJSONResponse(w, err.Error())
 		return
 	}
 	conn.Close()
+
+	if len(response.Error) != 0 {
+		log.Println("Error from server:", response.Error)
+		errorJSONResponse(w, response.Error)
+		return
+	}
 }
 
 func checkUserSession(conn net.Conn, cookie *http.Cookie) (userData server.User, isActive bool) {

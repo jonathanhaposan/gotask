@@ -4,6 +4,7 @@ type TCPRequest struct {
 	RequestType      int
 	Cookie           string
 	HasActiveSession bool
+	Error            string
 	User             User
 	UploadedPicture  UploadedPicture
 }

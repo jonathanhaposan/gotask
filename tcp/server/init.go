@@ -27,17 +27,25 @@ func InitRedisConn() {
 	redisPool = client.InitRedis()
 	if redisPool == nil {
 		log.Println("Error connecting")
+		return
 	}
 }
 
 func InitDBConn() {
+	log.Println("Start connecting to MySQL on :3306")
 	conn, err := dbClient.InitDB()
 	if err != nil {
 		log.Println("Error init DB Conn", err)
 		return
 	}
 
+	if conn == nil {
+		log.Println("Failed to get connection to MySQL")
+		return
+	}
+
 	db = conn
 	db.SetMaxIdleConns(1)
 	db.SetMaxOpenConns(10)
+
 }

@@ -51,19 +51,3 @@ func updateUserNickname(user User) (err error) {
 
 	return
 }
-
-func savePictureToServer(raw UploadedPicture) (err error) {
-
-	// file := raw.File
-	// defer file.Close()
-
-	// f, err := os.OpenFile(imageDirectory+"/"+user.Username, os.O_WRONLY|os.O_CREATE, 0666)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// defer f.Close()
-	// io.Copy(f, file)
-
-	return
-}

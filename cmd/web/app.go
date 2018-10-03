@@ -10,7 +10,6 @@ import (
 func main() {
 
 	router := webserver.InitRouter()
-	webserver.InitTCPClient()
 
 	s := &http.Server{
 		Addr:    ":9000",

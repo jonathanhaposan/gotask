@@ -37,21 +37,29 @@ func HandleRequest(conn net.Conn) {
 }
 
 func handleLogin(data TCPRequest) (resp TCPRequest) {
-	result := getUserLoginFromDB(data.User)
+	result, err := getUserLoginFromDB(data.User)
+	if err != nil {
+		log.Println("Error Get DB", err)
+		resp.Error = err.Error()
+		return
+	}
 
 	if len(result.Username) == 0 {
 		log.Println("Username not found")
+		resp.Error = err.Error()
 		return
 	}
 
 	if result.Password != data.User.Password {
 		log.Println("Wrong password")
+		resp.Error = err.Error()
 		return
 	}
 
 	cookie, err := setUserCookie(result)
 	if err != nil {
 		log.Println("err login", err)
+		resp.Error = err.Error()
 		return
 	}
 
@@ -68,18 +76,21 @@ func handleUpload(data TCPRequest) (resp TCPRequest) {
 		err := updateUserDetail(data.User, url)
 		if err != nil {
 			log.Println("Error update data", err)
+			resp.Error = err.Error()
 			return
 		}
 
 		err = ioutil.WriteFile(path, data.UploadedPicture.File, 0666)
 		if err != nil {
 			log.Println("Error write file", err)
+			resp.Error = err.Error()
 			return
 		}
 	} else {
 		err := updateUserNickname(data.User)
 		if err != nil {
 			log.Println("Error update nickname", err)
+			resp.Error = err.Error()
 			return
 		}
 	}
@@ -94,6 +105,7 @@ func getUserCookie(data TCPRequest) (resp TCPRequest) {
 	result, err := redis.Bytes(conn.Do("GET", data.Cookie))
 	if err != nil {
 		log.Println("Error get cookie from redis", err)
+		resp.Error = err.Error()
 		return
 	}
 

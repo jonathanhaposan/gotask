@@ -2,7 +2,6 @@ package webserver
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 
@@ -13,7 +12,6 @@ var (
 	assetDirectory    = "../../file/asset"
 	templateDirectory = "../../file/asset/html"
 	imageDirectory    = "../../file/image"
-	tcpClient         *net.TCPConn
 	targetTCP         = "localhost:8081"
 )
 
@@ -29,24 +27,6 @@ func InitRouter() (router *httprouter.Router) {
 	router.ServeFiles("/assets/*filepath", http.Dir(assetDirectory))
 	router.ServeFiles("/image/*filepath", http.Dir(imageDirectory))
 	return
-}
-
-func InitTCPClient() {
-	raddr, err := net.ResolveTCPAddr("tcp", targetTCP)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	conn, err := net.DialTCP("tcp", nil, raddr)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	log.Println("Start TCP Client on :8081")
-	tcpClient = conn
-	tcpClient.SetKeepAlive(true)
 }
 
 func OpenConn() (conn *net.TCPConn) {
