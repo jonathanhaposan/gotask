@@ -15,3 +15,21 @@ echo "GET http://localhost:9000/login" | .\vegeta.exe attack -rate=100/s -durati
 vegeta report -inputs=results_profile_nocache.bin -reporter=plot > plot.html
 
 .\vegeta.exe report 
+
+//UNIX
+echo "GET http://localhost:9000/login" | vegeta attack -name=login-1000-test -rate=1000/s -duration=10s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-login-1000.json &&
+echo "GET http://localhost:9000/login" | vegeta attack -name=login-2000-test -rate=2000/s -duration=10s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-login-2000.json
+vegeta report results-login-*
+vegeta plot results-login-* > report/login_plot.html
+
+echo "GET http://localhost:9000/profile" | vegeta attack -name=profile-1000-test -rate=1000/s -duration=10s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-profile-1000.json &&
+echo "GET http://localhost:9000/profile" | vegeta attack -name=profile-2000-test -rate=2000/s -duration=10s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-profile-2000.json
+vegeta report results-profile-*
+vegeta plot results-profile-* > report/profile_plot.html
+
+//POST
+vegeta attack -name=post-login-1000-test -duration=10s -targets=target/post_login.txt -rate=1000/s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-login-1000.json
+vegeta report results-post-login-*
+vegeta plot results-post-login-* > report/post_login_plot.html
+
+vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_profile.txt -rate=1000/s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-profile-1000.json

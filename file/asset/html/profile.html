@@ -57,6 +57,9 @@
       url: frm.attr('action'),
       processData: false, // do not process the data as url encoded params
       contentType: false, // by default jQuery sets this to urlencoded string
+      beforeSend: function (xhr) {
+        xhr.setRequestHeader('X-Requested-With', 'xmlhttprequest');
+      },
       data: fd,
       success: function (data) {
         location.reload();
