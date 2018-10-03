@@ -115,6 +115,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 
 	nickname := r.FormValue("nickname")
 	if len(nickname) == 0 {
+		log.Println("Nickname cannot empty")
 		errorJSONResponse(w, "Nickname cannot empty")
 		return
 	}
@@ -128,6 +129,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	if file != nil {
+		log.Println("Has Image")
 		buffer := bytes.NewBuffer(nil)
 		_, err := io.Copy(buffer, file)
 		if err != nil {
@@ -148,6 +150,8 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			errorJSONResponse(w, "unknown file type uploaded")
 			return
 		}
+	} else {
+		log.Println("Has not Image")
 	}
 
 	userSession.Nickname = nickname

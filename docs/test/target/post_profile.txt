@@ -1,0 +1,4 @@
+POST http://localhost:9000/profile
+Content-Type: multipart/form-data
+Cookie: session_cookie=ba78576e-9d86-4285-846f-92ff5d184319
+@target/cred_1_login.txt

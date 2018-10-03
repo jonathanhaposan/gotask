@@ -1,0 +1,1 @@
+nickname=garena1234&picture=@/home/tedwestside/go/src/github.com/jonathanhaposan/gotask/file/image/ipsum.png

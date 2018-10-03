@@ -33,3 +33,5 @@ vegeta report results-post-login-*
 vegeta plot results-post-login-* > report/post_login_plot.html
 
 vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_profile.txt -rate=1000/s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-profile-1000.json
+vegeta report results-post-profile-*
+vegeta plot results-post-profile-* > report/post_profile_plot.html
