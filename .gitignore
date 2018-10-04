@@ -4,3 +4,4 @@ cmd/tcp/tcp
 cmd/web/web
 
 docs/test/results-*.json
+asd.*

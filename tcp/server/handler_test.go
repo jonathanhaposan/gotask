@@ -159,8 +159,11 @@ func testHandleUploadPotiveOnlyNickname(t *testing.T) {
 	defer d.Close()
 	db = d
 
+	redisMock := mockRedis()
+	redisMock.Set("unique", "somevalue")
+
 	user := User{ID: 1, Nickname: "asda"}
-	request := TCPRequest{User: user}
+	request := TCPRequest{User: user, Cookie: "unique"}
 
 	mock.ExpectExec("UPDATE user").WithArgs(user.Nickname, user.ID).WillReturnResult(sqlmock.NewResult(1, 1))
 
@@ -202,9 +205,12 @@ func testHandleUploadPotive(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	redisMock := mockRedis()
+	redisMock.Set("unique", "somevalue")
+
 	uploadPic := UploadedPicture{File: file, FileExt: ".png"}
 	user := User{ID: 1, Username: "temp", Nickname: "temp"}
-	request := TCPRequest{User: user, UploadedPicture: uploadPic}
+	request := TCPRequest{User: user, UploadedPicture: uploadPic, Cookie: "unique"}
 	url := imageURL + request.User.Username + request.UploadedPicture.FileExt
 
 	mock.ExpectExec("UPDATE user").WithArgs(user.Nickname, url, user.ID).WillReturnResult(sqlmock.NewResult(1, 1))
