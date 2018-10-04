@@ -146,7 +146,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			raw, _ := mime.ExtensionsByType(rawPicture.FileType)
 			rawPicture.FileExt = raw[0]
 		default:
-			log.Println("unknown file type uploaded")
+			log.Println("unknown file type uploaded", http.DetectContentType(buffer.Bytes()), buffer.String())
 			errorJSONResponse(w, "unknown file type uploaded")
 			return
 		}

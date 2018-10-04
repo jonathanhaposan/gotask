@@ -15,7 +15,7 @@ func main() {
 	log.Println("Start TCP server on :8081")
 
 	// listen on all interfaces
-	ln, err := net.Listen("tcp", ":8081")
+	ln, err := net.Listen("tcp", "localhost:8081")
 	if err != nil {
 		log.Println(err)
 	}

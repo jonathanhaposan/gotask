@@ -70,7 +70,6 @@ func getUserCookie(data TCPRequest) (resp TCPRequest, err error) {
 
 	if result != nil {
 		resp.HasActiveSession = true
-		log.Printf("This %s cookie is found", data.Cookie)
 	}
 
 	user := User{}
@@ -88,7 +87,7 @@ func setUserCookie(user User) (cookie string, err error) {
 	conn := redisPool.Get()
 	defer conn.Close()
 
-	_, err = conn.Do("SETEX", sessionCookie.String(), 120, string(b))
+	_, err = conn.Do("SETEX", sessionCookie.String(), 1200, string(b))
 	if err != nil {
 		log.Println("Error set cookie from redis:", err)
 		return

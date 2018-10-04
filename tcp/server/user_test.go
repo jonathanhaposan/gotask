@@ -251,7 +251,7 @@ func TestSetUserCookie(t *testing.T) {
 
 	server.CheckGet(t, cookie, string(expected))
 
-	server.FastForward(121 * time.Second)
+	server.FastForward(1201 * time.Second)
 	if server.Exists(cookie) {
 		t.Errorf("Key should disappear")
 	}

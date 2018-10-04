@@ -12,7 +12,7 @@ func main() {
 	router := webserver.InitRouter()
 
 	s := &http.Server{
-		Addr:    ":9000",
+		Addr:    "localhost:9000",
 		Handler: router,
 	}
 

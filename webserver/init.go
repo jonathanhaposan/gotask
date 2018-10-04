@@ -13,6 +13,7 @@ var (
 	templateDirectory = "../../file/asset/html"
 	imageDirectory    = "../../file/image"
 	targetTCP         = "localhost:8081"
+	retries           = 5
 )
 
 func InitRouter() (router *httprouter.Router) {
