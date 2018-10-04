@@ -96,3 +96,16 @@ func setUserCookie(user User) (cookie string, err error) {
 	cookie = sessionCookie.String()
 	return
 }
+
+func deleteUserCookie(cookie string) (err error) {
+	conn := redisPool.Get()
+	defer conn.Close()
+
+	_, err = conn.Do("DEL", cookie)
+	if err != nil {
+		log.Println("Error delete cookie from redis:", err)
+		return
+	}
+
+	return
+}

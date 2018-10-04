@@ -91,5 +91,22 @@ func handleUpload(data TCPRequest) (resp TCPRequest) {
 		}
 	}
 
+	resp = data
+	resp.User.Picture = imageURL + data.User.Username + data.UploadedPicture.FileExt
+
+	err := deleteUserCookie(data.Cookie)
+	if err != nil {
+		log.Println("Error delete cookie:", err)
+		return
+	}
+
+	newCookie, err := setUserCookie(resp.User)
+	if err != nil {
+		log.Println("Error set new cookie:", err)
+		return
+	}
+
+	resp.Cookie = newCookie
+
 	return
 }

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/alicebob/miniredis"
-
 	"github.com/gomodule/redigo/redis"
 	sqlmock "gopkg.in/DATA-DOG/go-sqlmock.v1"
 )
@@ -254,5 +253,22 @@ func TestSetUserCookie(t *testing.T) {
 	server.FastForward(1201 * time.Second)
 	if server.Exists(cookie) {
 		t.Errorf("Key should disappear")
+	}
+}
+
+func testDeleteUserCookiePos(t *testing.T) {
+	server := mockRedis()
+	defer server.Close()
+
+	request := TCPRequest{
+		Cookie: "123",
+	}
+
+	server.Set(request.Cookie, "some value")
+	server.SetTTL(request.Cookie, 1200*time.Second)
+
+	err := deleteUserCookie(request.Cookie)
+	if err != nil {
+		t.Error("Error not expected")
 	}
 }
