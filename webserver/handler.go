@@ -129,7 +129,6 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	if file != nil {
-		log.Println("Has Image")
 		buffer := bytes.NewBuffer(nil)
 		_, err := io.Copy(buffer, file)
 		if err != nil {
@@ -147,11 +146,10 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			raw, _ := mime.ExtensionsByType(rawPicture.FileType)
 			rawPicture.FileExt = raw[0]
 		default:
+			log.Println("unknown file type uploaded")
 			errorJSONResponse(w, "unknown file type uploaded")
 			return
 		}
-	} else {
-		log.Println("Has not Image")
 	}
 
 	userSession.Nickname = nickname

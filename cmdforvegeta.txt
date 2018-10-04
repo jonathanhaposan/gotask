@@ -16,6 +16,9 @@ vegeta report -inputs=results_profile_nocache.bin -reporter=plot > plot.html
 
 .\vegeta.exe report 
 
+echo "GET http://localhost:9000/login" | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -name=login-1000-test -rate=1000/s -duration=10s | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta encode > /mnt/c/Users/jonathan.situmorang/go/src/github.com/jonathanhaposan/gotask/docs/test/results-login-1000.json &&
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta report results-login-*
+
 //UNIX
 echo "GET http://localhost:9000/login" | vegeta attack -name=login-1000-test -rate=1000/s -duration=10s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-login-1000.json &&
 echo "GET http://localhost:9000/login" | vegeta attack -name=login-2000-test -rate=2000/s -duration=10s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-login-2000.json
@@ -35,3 +38,11 @@ vegeta plot results-post-login-* > report/post_login_plot.html
 vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_profile.txt -rate=1000/s | vegeta encode > ~/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-profile-1000.json
 vegeta report results-post-profile-*
 vegeta plot results-post-profile-* > report/post_profile_plot.html
+
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_profile.txt -rate=1000/s | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta encode > /mnt/c/Users/jonathan.situmorang/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-profile-1000.json
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta report results-post-profile-*
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta plot results-post-profile-* > report/post_profile_plot.html
+
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -name=post-pic-profile-1000-test -duration=10s -targets=target/post_profile_pic.txt -rate=1000/s | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta encode > /mnt/c/Users/jonathan.situmorang/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-pic-profile-1000.json
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta report results-post-pic-profile-*
+/mnt/c/Users/jonathan.situmorang/go/bin/vegeta plot results-post-pic-profile-* > report/post_pic_profile_plot.html
