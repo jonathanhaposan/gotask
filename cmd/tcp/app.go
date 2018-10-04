@@ -15,19 +15,39 @@ func main() {
 	log.Println("Start TCP server on :8081")
 
 	// listen on all interfaces
-	ln, err := net.Listen("tcp", "localhost:8081")
+	// ln, err := net.Listen("tcp", "localhost:8081")
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+	// defer func() {
+	// 	log.Println("TCP Server Stop...")
+	// 	ln.Close()
+	// }()
+	// // run loop forever (or until ctrl-c)
+	// for {
+	// 	// accept connection on port
+	// 	conn, err := ln.Accept()
+	// 	if err != nil {
+	// 		log.Println(err)
+	// 	}
+
+	// 	go server.HandleRequest(conn)
+	// }
+
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:8081")
 	if err != nil {
-		log.Println(err)
+		return
 	}
 
-	defer func() {
-		log.Println("TCP Server Stop...")
-		ln.Close()
-	}()
-	// run loop forever (or until ctrl-c)
+	listener, err := net.ListenTCP("tcp4", tcpAddr)
+	if err != nil {
+		return
+	}
+
 	for {
 		// accept connection on port
-		conn, err := ln.Accept()
+		conn, err := listener.AcceptTCP()
 		if err != nil {
 			log.Println(err)
 		}
@@ -35,16 +55,3 @@ func main() {
 		go server.HandleRequest(conn)
 	}
 }
-
-/**
-tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:9999")
-    if err != nil {
-        return
-    }
-    listener, err := net.ListenTCP("tcp", tcpAddr)
-    if err != nil {
-        return
-	}
-
-	https://stackoverflow.com/questions/38646224/golang-tcp-client-does-not-receive-data-from-server-hangs-blocks-on-conn-read/38650064
-**/

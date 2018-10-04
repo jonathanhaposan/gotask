@@ -82,6 +82,8 @@ func handleUpload(data TCPRequest) (resp TCPRequest) {
 			resp.Error = err.Error()
 			return
 		}
+
+		data.User.Picture = url
 	} else {
 		err := updateUserNickname(data.User)
 		if err != nil {
@@ -92,8 +94,6 @@ func handleUpload(data TCPRequest) (resp TCPRequest) {
 	}
 
 	resp = data
-	resp.User.Picture = imageURL + data.User.Username + data.UploadedPicture.FileExt
-
 	err := deleteUserCookie(data.Cookie)
 	if err != nil {
 		log.Println("Error delete cookie:", err)

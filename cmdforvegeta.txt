@@ -39,6 +39,12 @@ vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_pr
 vegeta report results-post-profile-*
 vegeta plot results-post-profile-* > report/post_profile_plot.html
 
+vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_profile.txt -rate=1000/s | vegeta encode > results-post-profile-1000.json
+vegeta report results-post-profile-*
+
+vegeta attack -name=post-profile-500-test -duration=10s -targets=target/post_profile.txt -rate=500/s | vegeta encode > results-post-profile-500.json
+
+
 /mnt/c/Users/jonathan.situmorang/go/bin/vegeta attack -name=post-profile-1000-test -duration=10s -targets=target/post_profile.txt -rate=1000/s | /mnt/c/Users/jonathan.situmorang/go/bin/vegeta encode > /mnt/c/Users/jonathan.situmorang/go/src/github.com/jonathanhaposan/gotask/docs/test/results-post-profile-1000.json
 /mnt/c/Users/jonathan.situmorang/go/bin/vegeta report results-post-profile-*
 /mnt/c/Users/jonathan.situmorang/go/bin/vegeta plot results-post-profile-* > report/post_profile_plot.html
