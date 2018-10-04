@@ -44,6 +44,7 @@ func main() {
 	if err != nil {
 		return
 	}
+	defer listener.Close()
 
 	for {
 		// accept connection on port
