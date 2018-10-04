@@ -30,15 +30,29 @@ func validateLogin(username, password string, reqType int) (data server.TCPReque
 	return
 }
 
-func errorJSONResponse(w http.ResponseWriter, err string) (e error) {
-	resp := ResponseJSON{
-		Status: http.StatusInternalServerError,
-		Error:  err,
+func JSONResponse(w http.ResponseWriter, result interface{}, err string) (e error) {
+	if result == nil {
+		resp := ResponseJSON{
+			Status: http.StatusInternalServerError,
+			Error:  err,
+		}
+
+		j, _ := json.Marshal(resp)
+		w.WriteHeader(resp.Status)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(j)
+
+	} else {
+		resp := ResponseJSON{
+			Status: http.StatusOK,
+		}
+
+		j, _ := json.Marshal(resp)
+		w.WriteHeader(resp.Status)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(j)
+		return
 	}
 
-	j, _ := json.Marshal(resp)
-	w.WriteHeader(resp.Status)
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(j)
 	return
 }

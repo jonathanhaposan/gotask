@@ -49,3 +49,11 @@ func TestOpenConn(t *testing.T) {
 	}
 
 }
+
+func TestInitRouter(t *testing.T) {
+	r := InitRouter()
+
+	if r == nil {
+		t.Fatal("Fail to init router")
+	}
+}

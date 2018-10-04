@@ -10,8 +10,13 @@ import (
 func Test_errorJSONRespose(t *testing.T) {
 	rw := httptest.NewRecorder()
 	e := "error"
+	s := "sukses"
 
-	if err := errorJSONResponse(rw, e); err != nil {
+	if err := JSONResponse(rw, nil, e); err != nil {
+		t.Errorf("Error were not expected")
+	}
+
+	if err := JSONResponse(rw, s, e); err != nil {
 		t.Errorf("Error were not expected")
 	}
 }

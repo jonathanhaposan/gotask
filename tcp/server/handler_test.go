@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"io/ioutil"
+	"net"
 	"os"
 	"testing"
 
@@ -22,6 +23,12 @@ func TestHandleUpload(t *testing.T) {
 	testHandleUploadPotive(t)
 	testHandleUploadNegativeOnlyNickname(t)
 	testHandleUploadPotiveOnlyNickname(t)
+}
+
+func TestHandleRequest(t *testing.T) {
+	testHandleRequestCaseCheckCookie(t)
+	testHandleRequestCaseUpload(t)
+	testHandleRequestCaseLogin(t)
 }
 
 func testHandleLoginPositive(t *testing.T) {
@@ -228,5 +235,90 @@ func testHandleUploadNegative(t *testing.T) {
 	resp := handleUpload(request)
 	if len(resp.Error) == 0 {
 		t.Errorf("Error not expected")
+	}
+}
+
+func testHandleRequestCaseLogin(t *testing.T) {
+	d, _, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("Unexpected error %+v\n", err)
+	}
+	defer d.Close()
+	db = d
+
+	request := TCPRequest{RequestType: 1}
+
+	clientMock, serverMock := net.Pipe()
+
+	go func() {
+		conn := clientMock
+		defer conn.Close()
+
+		err := SendTCPData(conn, request)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+	}()
+
+	for {
+		conn := serverMock
+		HandleRequest(conn)
+		return // Done
+	}
+}
+
+func testHandleRequestCaseUpload(t *testing.T) {
+	d, _, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("Unexpected error %+v\n", err)
+	}
+	defer d.Close()
+	db = d
+
+	request := TCPRequest{RequestType: 2}
+
+	clientMock, serverMock := net.Pipe()
+
+	go func() {
+		conn := clientMock
+		defer conn.Close()
+
+		err := SendTCPData(conn, request)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+	}()
+
+	for {
+		conn := serverMock
+		HandleRequest(conn)
+		return // Done
+	}
+}
+
+func testHandleRequestCaseCheckCookie(t *testing.T) {
+	mockRedis()
+
+	request := TCPRequest{RequestType: 3}
+
+	clientMock, serverMock := net.Pipe()
+
+	go func() {
+		conn := clientMock
+		defer conn.Close()
+
+		err := SendTCPData(conn, request)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+	}()
+
+	for {
+		conn := serverMock
+		HandleRequest(conn)
+		return // Done
 	}
 }
