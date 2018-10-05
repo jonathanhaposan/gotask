@@ -45,30 +45,29 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	}
 	requestTCP, err := validateLogin(r.FormValue("username"), r.FormValue("password"), server.RequestLogin)
 	if err != nil {
-		log.Println("Error validate data:", err)
+		log.Printf("[webserver][handlerPostLogin]Failed to validate form data. %+v\n", err)
 		JSONResponse(w, nil, err.Error())
 		return
 	}
 
 	conn := OpenConn()
-
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
-		log.Println("Error Send data to server:", err)
+		log.Printf("[webserver][handlerPostLogin]Failed to send TCP Data. %+v\n", err)
 		JSONResponse(w, nil, err.Error())
 		return
 	}
 
 	response, err := server.ReadTCPData(conn)
 	if err != nil {
-		log.Println("Error Read data from server:", err)
+		log.Printf("[webserver][handlerPostLogin]Failed to read TCP Data. %+v\n", err)
 		JSONResponse(w, nil, err.Error())
 		return
 	}
 	conn.Close()
 
 	if len(response.Error) != 0 {
-		log.Println("Error from server:", response.Error)
+		log.Printf("[webserver][handlerPostLogin]Error in response. %+v\n", err)
 		JSONResponse(w, nil, response.Error)
 		return
 	}
@@ -117,7 +116,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 
 	nickname := r.FormValue("nickname")
 	if len(nickname) == 0 {
-		log.Println("Nickname cannot empty")
+		log.Printf("[webserver][handlerPostProfile]Nickname should not empty. %+v\n", err)
 		JSONResponse(w, nil, "Nickname cannot empty")
 		return
 	}
@@ -125,6 +124,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	file, head, err := r.FormFile("picture") // img is the key of the form-data
 	if err != nil {
 		if err.Error() != http.ErrMissingFile.Error() {
+			log.Printf("[webserver][handlerPostProfile]Error when read picture. %+v\n", err)
 			JSONResponse(w, nil, err.Error())
 			return
 		}
@@ -134,7 +134,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		buffer := bytes.NewBuffer(nil)
 		_, err := io.Copy(buffer, file)
 		if err != nil {
-			log.Println("Error parse to buffer:", err)
+			log.Printf("[webserver][handlerPostProfile]Failed parse picture to buffer. %+v\n", err)
 			JSONResponse(w, nil, err.Error())
 			return
 		}
@@ -148,7 +148,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 			raw, _ := mime.ExtensionsByType(rawPicture.FileType)
 			rawPicture.FileExt = raw[0]
 		default:
-			log.Println("unknown file type uploaded", http.DetectContentType(buffer.Bytes()), buffer.String())
+			log.Printf("[webserver][handlerPostProfile]Uploaded file should be image type not %s\n", http.DetectContentType(buffer.Bytes()))
 			JSONResponse(w, nil, "unknown file type uploaded")
 			return
 		}
@@ -166,20 +166,20 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	defer conn.Close()
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
-		log.Println("Error Send data to server:", err)
+		log.Printf("[webserver][handlerPostProfile]Failed to send TCP Data. %+v\n", err)
 		JSONResponse(w, nil, err.Error())
 		return
 	}
 
 	response, err := server.ReadTCPData(conn)
 	if err != nil {
-		log.Println("Error Read data from server:", err)
+		log.Printf("[webserver][handlerPostProfile]Failed to read TCP Data. %+v\n", err)
 		JSONResponse(w, nil, err.Error())
 		return
 	}
 
 	if len(response.Error) != 0 {
-		log.Println("Error from server:", response.Error)
+		log.Printf("[webserver][handlerPostProfile]Error in response. %+v\n", err)
 		JSONResponse(w, nil, response.Error)
 		return
 	}
@@ -200,13 +200,13 @@ func checkUserSession(conn net.Conn, cookie *http.Cookie) (userData server.User,
 
 	err := server.SendTCPData(conn, requestTCP)
 	if err != nil {
-		log.Println("Error Send data to server")
+		log.Printf("[webserver][checkUserSession]Failed to send TCP Data. %+v\n", err)
 		return
 	}
 
 	response, err := server.ReadTCPData(conn)
 	if err != nil {
-		log.Println("Error Read data from server")
+		log.Printf("[webserver][checkUserSession]Failed to read TCP Data. %+v\n", err)
 		return
 	}
 

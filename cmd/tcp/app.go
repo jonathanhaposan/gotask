@@ -37,11 +37,13 @@ func main() {
 
 	tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:8081")
 	if err != nil {
+		log.Printf("[tcp server][main]Error Resolve TCP Addr. %+v\n", err)
 		return
 	}
 
 	listener, err := net.ListenTCP("tcp4", tcpAddr)
 	if err != nil {
+		log.Printf("[tcp server][main]Error initiate listener to address. %+v\n", err)
 		return
 	}
 	defer listener.Close()
@@ -50,7 +52,8 @@ func main() {
 		// accept connection on port
 		conn, err := listener.AcceptTCP()
 		if err != nil {
-			log.Println(err)
+			log.Printf("[tcp server][main]Error when accepting connection. %+v\n", err)
+			return
 		}
 
 		go server.HandleRequest(conn)

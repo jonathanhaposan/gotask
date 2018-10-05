@@ -26,7 +26,7 @@ func newPool(server string) *redis.Pool {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", server)
 			if err != nil {
-				log.Println("Redis Error", err)
+				log.Printf("[redis][newPool]Failed dail to server. %+v\n", err)
 				return nil, err
 			}
 			return c, err
@@ -35,7 +35,7 @@ func newPool(server string) *redis.Pool {
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
 			_, err := c.Do("PING")
 			if err != nil {
-				log.Println("Error Ping Redis", err)
+				log.Printf("[redis][newPool]Failed ping to server. %+v\n", err)
 				return err
 			}
 			return err

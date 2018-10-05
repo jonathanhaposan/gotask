@@ -18,7 +18,8 @@ func main() {
 
 	log.Println("Start server on :9000")
 	if err := s.ListenAndServe(); err != nil {
-		log.Println("Server error:", err)
+		log.Printf("[web server][main]Error start web server. %+v\n", err)
+		return
 	}
 	log.Println("Server stoped")
 }

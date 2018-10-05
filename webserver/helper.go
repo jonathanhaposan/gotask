@@ -3,19 +3,27 @@ package webserver
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/jonathanhaposan/gotask/tcp/server"
 )
 
+var (
+	errorEmptyUsername = errors.New("username is empty")
+	errorEmptyPassword = errors.New("password is empty")
+)
+
 func validateLogin(username, password string, reqType int) (data server.TCPRequest, err error) {
 	if len(username) == 0 {
-		err = errors.New("username empty")
+		err = errorEmptyUsername
+		log.Printf("[webserver][validateLogin]Username should not empty. %+v\n", err)
 		return
 	}
 
 	if len(password) == 0 {
-		err = errors.New("password empty")
+		err = errorEmptyPassword
+		log.Printf("[webserver][validateLogin]Password should not empty. %+v\n", err)
 		return
 	}
 
@@ -41,7 +49,6 @@ func JSONResponse(w http.ResponseWriter, result interface{}, err string) (e erro
 		w.WriteHeader(resp.Status)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(j)
-
 	} else {
 		resp := ResponseJSON{
 			Status: http.StatusOK,
@@ -51,8 +58,6 @@ func JSONResponse(w http.ResponseWriter, result interface{}, err string) (e erro
 		w.WriteHeader(resp.Status)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(j)
-		return
 	}
-
 	return
 }

@@ -10,7 +10,7 @@ import (
 func InitDB() (db *sql.DB, err error) {
 	db, err = sql.Open("mysql", "root@/goentry")
 	if err != nil {
-		log.Println("Init connection to DB :3306")
+		log.Printf("[db][InitDB]Failed to open connection. %+v\n", err)
 		return
 	}
 	return

@@ -1,7 +1,7 @@
 package webserver
 
 import (
-	"fmt"
+	"log"
 	"net"
 	"net/http"
 
@@ -33,13 +33,13 @@ func InitRouter() (router *httprouter.Router) {
 func OpenConn() (conn *net.TCPConn) {
 	raddr, err := net.ResolveTCPAddr("tcp", targetTCP)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("[webserver][OpenConn]Failed resolving TCP Addr. %+v\n", err)
 		return
 	}
 
 	conn, err = net.DialTCP("tcp", nil, raddr)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("[webserver][OpenConn]Failed dialing to TCP Server. %+v\n", err)
 		return
 	}
 	return
