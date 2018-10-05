@@ -17,7 +17,7 @@ func getUserLoginFromDB(user User) (result User, err error) {
 	query := `SELECT id, username, nickname, password, picture FROM user WHERE username=?`
 	rows, err := db.Query(query, user.Username)
 	if err != nil {
-		log.Println("Error Query:", err)
+		log.Printf("[server][getUserLoginFromDB]Error when executing query. %+v\n", err)
 		return
 	}
 	defer rows.Close()
@@ -25,11 +25,10 @@ func getUserLoginFromDB(user User) (result User, err error) {
 	for rows.Next() {
 		err = rows.Scan(&result.ID, &result.Username, &result.Nickname, &result.Password, &result.Picture)
 		if err != nil {
-			log.Println("Error Scan:", err)
+			log.Printf("[server][getUserLoginFromDB]Error when scan query result. %+v\n", err)
 			return
 		}
 	}
-
 	return
 }
 
@@ -38,10 +37,9 @@ func updateUserDetail(user User, url string) (err error) {
 
 	_, err = db.Exec(query, user.Nickname, url, user.ID)
 	if err != nil {
-		log.Println("Error Query:", err)
+		log.Printf("[server][updateUserDetail]Error when executing update query. %+v\n", err)
 		return
 	}
-
 	return
 }
 
@@ -50,10 +48,9 @@ func updateUserNickname(user User) (err error) {
 
 	_, err = db.Exec(query, user.Nickname, user.ID)
 	if err != nil {
-		log.Println("Error Query:", err)
+		log.Printf("[server][updateUserNickname]Error when executing update query. %+v\n", err)
 		return
 	}
-
 	return
 }
 
@@ -63,7 +60,7 @@ func getUserCookie(data TCPRequest) (resp TCPRequest, err error) {
 
 	result, err := redis.Bytes(conn.Do("GET", data.Cookie))
 	if err != nil {
-		log.Println("Error get cookie from redis", err)
+		log.Printf("[server][getUserCookie]Error get data from redis. %+v\n", err)
 		resp.Error = err.Error()
 		return
 	}
@@ -89,7 +86,7 @@ func setUserCookie(user User) (cookie string, err error) {
 
 	_, err = conn.Do("SETEX", sessionCookie.String(), 1200, string(b))
 	if err != nil {
-		log.Println("Error set cookie from redis:", err)
+		log.Printf("[server][setUserCookie]Error set data to redis. %+v\n", err)
 		return
 	}
 
@@ -103,7 +100,7 @@ func deleteUserCookie(cookie string) (err error) {
 
 	_, err = conn.Do("DEL", cookie)
 	if err != nil {
-		log.Println("Error delete cookie from redis:", err)
+		log.Printf("[server][deleteUserCookie]Error delete data from redis. %+v\n", err)
 		return
 	}
 

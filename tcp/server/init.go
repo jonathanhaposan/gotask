@@ -26,7 +26,7 @@ const (
 func InitRedisConn() {
 	redisPool = client.InitRedis()
 	if redisPool == nil {
-		log.Println("Error connecting")
+		log.Printf("[server][InitRedisConn]Failed to get redis pool instance")
 		return
 	}
 }
@@ -35,12 +35,12 @@ func InitDBConn() {
 	log.Println("Start connecting to MySQL on :3306")
 	conn, err := dbClient.InitDB()
 	if err != nil {
-		log.Println("Error init DB Conn", err)
+		log.Printf("[server][InitDBConn]Failed when connecting to database. %+v\n", err)
 		return
 	}
 
 	if conn == nil {
-		log.Println("Failed to get connection to MySQL")
+		log.Printf("[server][InitDBConn]Failed to get database connection")
 		return
 	}
 

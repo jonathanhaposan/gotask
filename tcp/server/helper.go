@@ -10,7 +10,7 @@ func SendTCPData(conn net.Conn, data TCPRequest) (err error) {
 	encoder := gob.NewEncoder(conn)
 	err = encoder.Encode(data)
 	if err != nil {
-		log.Println("Error encode TCPData", err)
+		log.Printf("[server][SendTCPData]Error encoding send data. %+v\n", err)
 		return
 	}
 	return
@@ -21,7 +21,7 @@ func ReadTCPData(conn net.Conn) (data TCPRequest, err error) {
 	decoder := gob.NewDecoder(conn)
 	err = decoder.Decode(&data)
 	if err != nil {
-		log.Println("Error decode TCPData", err)
+		log.Printf("[server][ReadTCPData]Error encoding read data. %+v\n", err)
 		return
 	}
 	return
