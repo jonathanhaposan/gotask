@@ -6,7 +6,6 @@ import (
 	"io"
 	"log"
 	"mime"
-	"net"
 	"net/http"
 	"time"
 
@@ -16,10 +15,14 @@ import (
 
 func handlerGetLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	cookie, err := r.Cookie("session_cookie")
+	// has cookie
 	if err == nil {
-		conn := OpenConn()
-		_, hasSession := checkUserSession(conn, cookie)
-		conn.Close()
+		_, hasSession, err := checkUserSession(cookie)
+		if err != nil {
+			log.Printf("[server][handlerGetLogin]Failed when check cookie. %+v\n", err)
+			http.Error(w, "Internal Error", http.StatusInternalServerError)
+			return
+		}
 
 		if hasSession {
 			http.Redirect(w, r, "/profile", http.StatusSeeOther)
@@ -34,9 +37,12 @@ func handlerGetLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	cookie, err := r.Cookie("session_cookie")
 	if err == nil {
-		conn := OpenConn()
-		_, hasSession := checkUserSession(conn, cookie)
-		conn.Close()
+		_, hasSession, err := checkUserSession(cookie)
+		if err != nil {
+			log.Printf("[server][handlerPostLogin]Failed when check cookie. %+v\n", err)
+			http.Error(w, "Internal Error", http.StatusInternalServerError)
+			return
+		}
 
 		if hasSession {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
@@ -51,6 +57,8 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 	}
 
 	conn := OpenConn()
+	defer conn.Close()
+
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
 		log.Printf("[webserver][handlerPostLogin]Failed to send TCP Data. %+v\n", err)
@@ -64,7 +72,6 @@ func handlerPostLogin(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 		JSONResponse(w, nil, err.Error())
 		return
 	}
-	conn.Close()
 
 	if len(response.Error) != 0 {
 		log.Printf("[webserver][handlerPostLogin]Error in response. %+v\n", err)
@@ -88,9 +95,22 @@ func handlerGetProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		return
 	}
 
-	conn := OpenConn()
-	user, _ := checkUserSession(conn, cookie)
-	conn.Close()
+	user, hasSession, err := checkUserSession(cookie)
+	if err != nil {
+		log.Printf("[server][handlerGetProfile]Failed when check cookie. %+v\n", err)
+		http.Error(w, "Internal Error", http.StatusInternalServerError)
+		return
+	}
+
+	if !hasSession {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "session_cookie",
+			Value:  "",
+			MaxAge: -1,
+		})
+		http.Error(w, "Unauthorized - Session Expired", http.StatusUnauthorized)
+		return
+	}
 
 	tmpl := template.Must(template.ParseFiles(templateDirectory + "/profile.html"))
 	tmpl.Execute(w, user)
@@ -105,11 +125,19 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		return
 	}
 
-	conn := OpenConn()
-	userSession, hasSession := checkUserSession(conn, cookie)
-	conn.Close()
+	userSession, hasSession, err := checkUserSession(cookie)
+	if err != nil {
+		log.Printf("[server][handlerGetProfile]Failed when check cookie. %+v\n", err)
+		http.Error(w, "Internal Error", http.StatusInternalServerError)
+		return
+	}
 
 	if !hasSession {
+		http.SetCookie(w, &http.Cookie{
+			Name:   "session_cookie",
+			Value:  "",
+			MaxAge: -1,
+		})
 		http.Error(w, "Unauthorized - Session Expired", http.StatusUnauthorized)
 		return
 	}
@@ -162,7 +190,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		User:            userSession,
 	}
 
-	conn = OpenConn()
+	conn := OpenConn()
 	defer conn.Close()
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
@@ -193,12 +221,15 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	JSONResponse(w, "sukses", "")
 }
 
-func checkUserSession(conn net.Conn, cookie *http.Cookie) (userData server.User, isActive bool) {
+func checkUserSession(cookie *http.Cookie) (userData server.User, isActive bool, err error) {
+	conn := OpenConn()
+	defer conn.Close()
+
 	requestTCP := server.TCPRequest{}
 	requestTCP.Cookie = cookie.Value
 	requestTCP.RequestType = server.RequestCheckCookie
 
-	err := server.SendTCPData(conn, requestTCP)
+	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
 		log.Printf("[webserver][checkUserSession]Failed to send TCP Data. %+v\n", err)
 		return
