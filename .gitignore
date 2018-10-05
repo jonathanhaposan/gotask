@@ -5,3 +5,6 @@ cmd/web/web
 
 docs/test/results-*.json
 asd.*
+docs/test/asd1000\.json
+
+docs/test/bombardier

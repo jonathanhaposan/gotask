@@ -49,5 +49,6 @@ vegeta plot results-post-profile-* > report/post_profile_plot.html
 /mnt/c/Users/jonathan.situmorang/go/bin/vegeta report results-post-pic-profile-*
 /mnt/c/Users/jonathan.situmorang/go/bin/vegeta plot results-post-pic-profile-* > report/post_pic_profile_plot.html
 
+bombardier -c 125 -n 100000 -m GET http://localhost:9000/login
 bombardier -c 125 -n 100000 -m POST --header="Content-Type: application/x-www-form-urlencoded" -f cred_1_login.txt http://localhost:9000/login
-bombardier -c 125 -n 100000 -m POST --header="Cookie: session_cookie=0679014b-b387-4400-806a-5e5c7b251278" --header="Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -f data_1_profile.txt http://localhost:9000/profile
+bombardier -c 70 -n 10000 -m POST --header="Cookie: session_cookie=2b66fa13-6f43-4bec-bbc3-0389c74e256d" --header="Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -f data_1_profile.txt http://localhost:9000/profile

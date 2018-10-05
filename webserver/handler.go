@@ -163,6 +163,7 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 	}
 
 	conn = OpenConn()
+	defer conn.Close()
 	err = server.SendTCPData(conn, requestTCP)
 	if err != nil {
 		log.Println("Error Send data to server:", err)
@@ -176,7 +177,6 @@ func handlerPostProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Pa
 		JSONResponse(w, nil, err.Error())
 		return
 	}
-	conn.Close()
 
 	if len(response.Error) != 0 {
 		log.Println("Error from server:", response.Error)
