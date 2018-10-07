@@ -1,9 +1,5 @@
 
 
-
-
-
-
     $ bombardier -c 125 -n 100000 -m GET http://localhost:9000/login
     Bombarding http://localhost:9000/login with 100000 request(s) using 125 connection(s)
     100000 / 100000 [=========================================================================================] 100.00% 14s
