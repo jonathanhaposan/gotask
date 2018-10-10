@@ -9,6 +9,8 @@ Copy all data to
 $GOPATH/src/github.com/jonathanhaposan/
 ```
 
+Run SQL ```user.sql``
+
 Run these 2 binaries
 ```sh
 $ cd $GOPATH/src/github.com/jonathanhaposan/gotask/cmd/web && go build && ./web
@@ -23,7 +25,7 @@ $ cd $GOPATH/src/github.com/jonathanhaposan/gotask/cmd/tcp   && go build && ./tc
 | **Endpoints** | **Method** | **Description** |
 |-----------------|:------------:|-------------------|
 |`/login`| `GET`   | Show login page |
-|`/login`| `POST`  | Web view to testing save bill. It will redirect to `/sanitycheck/submit` if fail, and `/sanitycheck/submit` if success|
+|`/login`| `POST`  | Handle login user Accept form-data : username & password|
 |`/profile`| `GET` | Show profile page, require cookie |
 |`/profile`| `POST`| Handle to update nickname and picture, accept multipart : nickname & picture, require cookie |
 

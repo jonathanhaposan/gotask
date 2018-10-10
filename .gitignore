@@ -10,3 +10,5 @@ docs/test/asd1000\.json
 docs/test/bombardier
 
 docs/test/target/bombardier
+
+\.DS_Store
