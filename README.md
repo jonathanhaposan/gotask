@@ -11,6 +11,8 @@ $GOPATH/src/github.com/jonathanhaposan/
 
 Run SQL ```user.sql``
 
+Run ```go get ./...``` inside ```$GOPATH/src/github.com/jonathanhaposan/```
+
 Run these 2 binaries
 ```sh
 $ cd $GOPATH/src/github.com/jonathanhaposan/gotask/cmd/web && go build && ./web
