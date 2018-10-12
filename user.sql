@@ -1,5 +1,3 @@
-create database goentry;
-use goentry;
 create table if not exists user (id int not null auto_increment primary key, username varchar(32) not null unique, password varchar(32) not null, nickname varchar(32), picture varchar(128) );
 insert into user (username, password, nickname, picture) values ('vchristou0', 'Jf8psHYW', 'Valida', 'https://robohash.org/voluptatumvelomnis.jpg?size=300x300&set=set1');
 insert into user (username, password, nickname, picture) values ('odwight1', 'zXkDTId', 'Onofredo', 'https://robohash.org/nonquiet.png?size=300x300&set=set1');

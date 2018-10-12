@@ -12,11 +12,11 @@ func main() {
 	router := webserver.InitRouter()
 
 	s := &http.Server{
-		Addr:    "localhost:9000",
+		Addr:    ":9001",
 		Handler: router,
 	}
 
-	log.Println("Start server on :9000")
+	log.Println("Start server on :9001")
 	if err := s.ListenAndServe(); err != nil {
 		log.Printf("[web server][main]Error start web server. %+v\n", err)
 		return

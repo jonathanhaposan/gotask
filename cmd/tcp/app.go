@@ -35,7 +35,7 @@ func main() {
 	// 	go server.HandleRequest(conn)
 	// }
 
-	tcpAddr, err := net.ResolveTCPAddr("tcp4", "127.0.0.1:8081")
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", ":8081")
 	if err != nil {
 		log.Printf("[tcp server][main]Error Resolve TCP Addr. %+v\n", err)
 		return

@@ -1,0 +1,47 @@
+version: '3'
+services:
+  mysql.db:
+    image: "mysql:5.7"
+    restart: on-failure
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./user.sql:/docker-entrypoint-initdb.d/dump.sql
+    networks:
+      - serverone
+    environment:
+      - MYSQL_DATABASE=goentry
+      - MYSQL_USER=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "5432:3306"
+
+  tcp:
+    image: "golang:1.11"
+    restart: on-failure
+    container_name: tcp
+    depends_on:
+      - mysql.db
+    networks: 
+      - serverone
+    command: ./cmd/tcp/tcp
+    ports:
+      - "8081:8081"
+
+  web:
+    build: .
+    image: "golang:1.11"
+    restart: on-failure
+    container_name: web
+    depends_on: 
+      - tcp
+    networks: 
+      - serverone
+    command: ./cmd/web/web
+    ports:
+      - "9001:9001"
+
+
+networks: 
+  serverone:
+
+  

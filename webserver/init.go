@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	assetDirectory    = "../../file/asset"
-	templateDirectory = "../../file/asset/html"
-	imageDirectory    = "../../file/image"
-	targetTCP         = "localhost:8081"
+	assetDirectory    = "file/asset"
+	templateDirectory = "file/asset/html"
+	imageDirectory    = "file/image"
+	targetTCP         = "tcp:8081"
 	retries           = 5
 )
 
