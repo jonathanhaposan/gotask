@@ -12,7 +12,7 @@ var (
 	assetDirectory    = "file/asset"
 	templateDirectory = "file/asset/html"
 	imageDirectory    = "file/image"
-	targetTCP         = "tcp:8081"
+	targetTCP         = ":8081"
 	retries           = 5
 )
 

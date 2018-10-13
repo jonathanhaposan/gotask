@@ -1,5 +1,11 @@
 version: '3'
 services:
+  redis.local:
+    image: "redis:alpine"
+    restart: on-failure
+    networks: 
+      - serverone
+
   mysql.db:
     image: "mysql:5.7"
     restart: on-failure
@@ -13,19 +19,7 @@ services:
       - MYSQL_USER=root
       - MYSQL_ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - "5432:3306"
-
-  tcp:
-    image: "golang:1.11"
-    restart: on-failure
-    container_name: tcp
-    depends_on:
-      - mysql.db
-    networks: 
-      - serverone
-    command: ./cmd/tcp/tcp
-    ports:
-      - "8081:8081"
+      - "9333:3306"
 
   web:
     build: .
@@ -33,12 +27,13 @@ services:
     restart: on-failure
     container_name: web
     depends_on: 
-      - tcp
+      - mysql.db
+      - redis.local
     networks: 
       - serverone
-    command: ./cmd/web/web
+    command: ./start.sh
     ports:
-      - "9001:9001"
+      - "9334:9001"
 
 
 networks: 
