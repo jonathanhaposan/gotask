@@ -87,7 +87,7 @@ $ cd $GOPATH/src/github.com/jonathanhaposan/gotask/cmd/tcp   && go build && ./tc
 
 **POST /profile**
 ```
-   $ bombardier -c 200 -n 8000 -m POST --header="Cookie: session_cookie=245648b1-ebcd-47ab-b70c-268daba09ae8" 
+   $ bombardier -c 200 -n 100000 -m POST --header="Cookie: session_cookie=245648b1-ebcd-47ab-b70c-268daba09ae8" 
     --header="Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -f data_1_profile.txt http://localhost:9334/profile
     Bombarding http://localhost:9334/profile with 100000 request(s) using 200 connection(s)
     100000 / 100000 [================================================================================================] 100.00% 1m5s
