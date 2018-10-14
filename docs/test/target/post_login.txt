@@ -1,3 +1,0 @@
-POST http://localhost:9000/login
-Content-Type: application/x-www-form-urlencoded
-@target/cred_1_login.txt

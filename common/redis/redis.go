@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	RedisHost = ":6379"
+	RedisHost = "redis.local:6379"
 )
 
 func InitRedis() (Pool *redis.Pool) {
