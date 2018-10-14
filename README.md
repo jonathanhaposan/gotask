@@ -2,14 +2,21 @@
 
 ### Installation
 
-This app requires [Golang](https://golang.org/dl/)
+This app requires [Golang](https://golang.org/dl/) and or [Docker](https://www.docker.com/)
+
+Simple
+```sh
+$ docker-compose up
+```
+
+OR
 
 Copy all data to
 ```
 $GOPATH/src/github.com/jonathanhaposan/
 ```
 
-Run SQL ```user.sql``
+Run SQL ```user.sql```
 
 Run ```go get ./...``` inside ```$GOPATH/src/github.com/jonathanhaposan/```
 
