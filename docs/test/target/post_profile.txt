@@ -1,5 +1,0 @@
-POST http://localhost:9000/profile
-Cookie: session_cookie=042d9b97-fbd2-4ab8-bc24-e68148037a57
-Cache-Control: no-cache
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
-@target/data_1_profile.txt

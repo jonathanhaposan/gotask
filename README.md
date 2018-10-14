@@ -2,14 +2,21 @@
 
 ### Installation
 
-This app requires [Golang](https://golang.org/dl/)
+This app requires [Golang](https://golang.org/dl/) and or [Docker](https://www.docker.com/)
+
+Simple
+```sh
+$ docker-compose up
+```
+
+OR
 
 Copy all data to
 ```
 $GOPATH/src/github.com/jonathanhaposan/
 ```
 
-Run SQL ```user.sql``
+Run SQL ```user.sql```
 
 Run ```go get ./...``` inside ```$GOPATH/src/github.com/jonathanhaposan/```
 
@@ -36,60 +43,60 @@ $ cd $GOPATH/src/github.com/jonathanhaposan/gotask/cmd/tcp   && go build && ./tc
 
 **GET /login**
 ```
-    $ bombardier -c 125 -n 100000 -m GET http://localhost:9000/login
-    Bombarding http://localhost:9000/login with 100000 request(s) using 125 connection(s)
-    100000 / 100000 [=========================================================================================] 100.00% 14s
+    $ bombardier -c 200 -n 100000 -m GET http://localhost:9334/login
+    Bombarding http://localhost:9334/login with 100000 request(s) using 200 connection(s)
+    100000 / 100000 [==================================================================================================] 100.00% 8s
     Done!
     Statistics        Avg      Stdev        Max
-    Reqs/sec      7011.23    1173.75    8662.56
-    Latency       17.85ms    25.36ms      1.17s
+    Reqs/sec     11621.38    1902.35   17737.71
+    Latency       17.22ms    77.38ms      3.16s
     HTTP codes:
         1xx - 0, 2xx - 100000, 3xx - 0, 4xx - 0, 5xx - 0
         others - 0
-    Throughput:    13.42MB/s
+    Throughput:    21.59MB/s
 ```
 
 **GET /profile**
 ```
-    $ bombardier -c 125 -n 100000 -m GET --header="Cookie: session_cookie=7dccca3f-5ee6-48d6-856f-2e03bdb071a6" http://localhost:9000/profile
-    Bombarding http://localhost:9000/profile with 100000 request(s) using 125 connection(s)
-    100000 / 100000 [=======================================================================================] 100.00% 1m30s
+    $ bombardier -c 200 -n 100000 -m GET --header="Cookie: session_cookie=245648b1-ebcd-47ab-b70c-268daba09ae8" http://localhost:9334/profile
+    Bombarding http://localhost:9334/profile with 100000 request(s) using 200 connection(s)
+    100000 / 100000 [=================================================================================================] 100.00% 32s
     Done!
     Statistics        Avg      Stdev        Max
-    Reqs/sec      1112.36     395.90    2908.36
-    Latency      112.27ms    37.30ms      2.02s
+    Reqs/sec      3072.84     648.25    7384.05
+    Latency       65.10ms    64.93ms      1.79s
     HTTP codes:
         1xx - 0, 2xx - 100000, 3xx - 0, 4xx - 0, 5xx - 0
         others - 0
-    Throughput:     2.67MB/s
+    Throughput:     7.34MB/s
 ```
 
 **POST /login**
 ```
-    $ bombardier -c 125 -n 8000 -m POST --header="Content-Type: application/x-www-form-urlencoded" -f cred_1_login.txt http://localhost:9000/login
-    Bombarding http://localhost:9000/login with 8000 request(s) using 125 connection(s)
-    8000 / 8000 [==============================================================================================] 100.00% 6sDone!
-    Statistics        Avg      Stdev        Max
-    Reqs/sec      1197.79     336.90    3140.70
-    Latency      104.43ms    17.98ms   275.67ms
+    $ bombardier -c 200 -n 100000 -m POST --header="Content-Type: application/x-www-form-urlencoded" -f cred_1_login.txt http://localhost:9334/login
+    Bombarding http://localhost:9334/login with 100000 request(s) using 200 connection(s)
+    100000 / 100000 [=================================================================================================] 100.00% 31s
+    Done!
+    Statistics        Avg      Stdev        Max  Reqs/sec      3153.73    1560.82    9591.72
+    Latency       62.57ms   106.50ms      1.66s
     HTTP codes:
-        1xx - 0, 2xx - 8000, 3xx - 0, 4xx - 0, 5xx - 0
+        1xx - 0, 2xx - 100000, 3xx - 0, 4xx - 0, 5xx - 0
         others - 0
-    Throughput:   505.87KB/s
+    Throughput:     1.31MB/s
 ```
 
 **POST /profile**
 ```
-    $ bombardier -c 125 -n 8000 -m POST --header="Cookie: session_cookie=7dccca3f-5ee6-48d6-856f-2e03bdb071a6" 
-      --header="Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -f data_1_profile.txt http://localhost:9000/profile
-    Bombarding http://localhost:9000/profile with 8000 request(s) using 125 connection(s)
-    8000 / 8000 [==========================================================================================================================] 100.00% 14s
+   $ bombardier -c 200 -n 8000 -m POST --header="Cookie: session_cookie=245648b1-ebcd-47ab-b70c-268daba09ae8" 
+    --header="Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW" -f data_1_profile.txt http://localhost:9334/profile
+    Bombarding http://localhost:9334/profile with 100000 request(s) using 200 connection(s)
+    100000 / 100000 [================================================================================================] 100.00% 1m5s
     Done!
     Statistics        Avg      Stdev        Max
-    Reqs/sec       571.23     309.17    3126.50
-    Latency      219.67ms    42.51ms      2.21s
+    Reqs/sec      1535.11     885.60    6795.46
+    Latency      130.03ms   129.61ms      2.50s
     HTTP codes:
-        1xx - 0, 2xx - 8000, 3xx - 0, 4xx - 0, 5xx - 0
+        1xx - 0, 2xx - 100000, 3xx - 0, 4xx - 0, 5xx - 0
         others - 0
-    Throughput:   356.65KB/s
+    Throughput:     0.94MB/s
 ```
